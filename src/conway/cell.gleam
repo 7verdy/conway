@@ -1,4 +1,5 @@
 import gleam/erlang/process
+import gleam/float
 import gleam/io
 import gleam/int
 import gleam/iterator
@@ -8,9 +9,14 @@ pub type Cell {
   Cell(y: Int, x: Int, alive: Bool)
 }
 
-pub fn run_game(size: Int, random: Bool) -> Nil {
-  let board = generate_board(size, random)
-  run_simulation(board, size - 1, 0)
+pub fn run_game(
+  height: Int,
+  width: Int,
+  random: Bool,
+  probability: Float,
+) -> Nil {
+  let board = generate_board(height, width, random, probability)
+  run_simulation(board, width - 1, 0)
 }
 
 pub fn run_simulation(board: List(Cell), max: Int, it: Int) -> Nil {
@@ -43,8 +49,13 @@ pub fn run_simulation(board: List(Cell), max: Int, it: Int) -> Nil {
   run_simulation(board, max, it + 1)
 }
 
-pub fn generate_board(size: Int, random: Bool) -> List(Cell) {
-  rec_generate_board([], size, 0, random)
+pub fn generate_board(
+  height: Int,
+  width: Int,
+  random: Bool,
+  probability: Float,
+) -> List(Cell) {
+  rec_generate_board([], height, width, 0, random, probability)
 }
 
 pub fn update_cell(cell: Cell, neighbours: Int) -> Cell {
@@ -60,10 +71,10 @@ pub fn update_cell(cell: Cell, neighbours: Int) -> Cell {
   }
 }
 
-pub fn print_board(board: List(Cell), max: Int) -> Nil {
+pub fn print_board(board: List(Cell), width: Int) -> Nil {
   board
   |> iterator.from_list
-  |> iterator.map(fn(cell) { cell_to_string(cell, max) })
+  |> iterator.map(fn(cell) { cell_to_string(cell, width) })
   |> iterator.each(io.print)
 }
 
@@ -92,29 +103,34 @@ fn cell_to_string(cell: Cell, max: Int) -> String {
 
 fn rec_generate_board(
   board: List(Cell),
-  size: Int,
+  height: Int,
+  width: Int,
   current: Int,
   random: Bool,
+  probability: Float,
 ) -> List(Cell) {
-  case size * size - current {
+  case height * width - current {
     0 -> board
     _ ->
       rec_generate_board(
         [
           // Since it is faster to add an element to the beginning of a list,
           // the board is built in reverse order.
-          Cell(size - current / size - 1, size - current % size - 1, case
+          Cell(height - current / height - 1, width - current % width - 1, case
             random
           {
             // Checkerboard pattern depending on the row.
-            False -> current % size % 2 == { size - { current / size - 1 } } % 2
-            True -> int.random(2) == 1
+            False ->
+              current % height % 2 == { height - { current / height - 1 } } % 2
+            True -> int.random(100) < float.round(probability *. 100.0)
           }),
           ..board
         ],
-        size,
+        height,
+        width,
         current + 1,
         random,
+        probability,
       )
   }
 }
