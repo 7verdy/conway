@@ -8,8 +8,8 @@ pub type Cell {
   Cell(y: Int, x: Int, alive: Bool)
 }
 
-pub fn run_game(size: Int) {
-  let board = generate_board(size)
+pub fn run_game(size: Int, random: Bool) -> Nil {
+  let board = generate_board(size, random)
   run_simulation(board, size - 1, 0)
 }
 
@@ -43,14 +43,10 @@ pub fn run_simulation(board: List(Cell), max: Int, it: Int) -> Nil {
   run_simulation(board, max, it + 1)
 }
 
-pub fn generate_board(size: Int) -> List(Cell) {
-  rec_generate_board([], size, 0)
+pub fn generate_board(size: Int, random: Bool) -> List(Cell) {
+  rec_generate_board([], size, 0, random)
 }
 
-// Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-// Any live cell with two or three live neighbors lives on to the next generation.
-// Any live cell with more than three live neighbors dies, as if by overpopulation.
-// Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
 pub fn update_cell(cell: Cell, neighbours: Int) -> Cell {
   let alive = case neighbours {
     0 | 1 -> False
@@ -94,7 +90,12 @@ fn cell_to_string(cell: Cell, max: Int) -> String {
 //   ])
 // }
 
-fn rec_generate_board(board: List(Cell), size: Int, current: Int) -> List(Cell) {
+fn rec_generate_board(
+  board: List(Cell),
+  size: Int,
+  current: Int,
+  random: Bool,
+) -> List(Cell) {
   case size * size - current {
     0 -> board
     _ ->
@@ -102,16 +103,18 @@ fn rec_generate_board(board: List(Cell), size: Int, current: Int) -> List(Cell) 
         [
           // Since it is faster to add an element to the beginning of a list,
           // the board is built in reverse order.
-          Cell(
-            size - current / size - 1,
-            size - current % size - 1,
+          Cell(size - current / size - 1, size - current % size - 1, case
+            random
+          {
             // Checkerboard pattern depending on the row.
-              current % size % 2 == { size - { current / size - 1 } } % 2,
-          ),
+            False -> current % size % 2 == { size - { current / size - 1 } } % 2
+            True -> int.random(2) == 1
+          }),
           ..board
         ],
         size,
         current + 1,
+        random,
       )
   }
 }
