@@ -1,20 +1,6 @@
 # conway
 
-[![Package Version](https://img.shields.io/hexpm/v/conway)](https://hex.pm/packages/conway)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/conway/)
-
-```sh
-gleam add conway
-```
-```gleam
-import conway
-
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
-
-Further documentation can be found at <https://hexdocs.pm/conway>.
+Conway is an attempt at making [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in Gleam as a means to learn the language.
 
 ## Development
 
