@@ -1,6 +1,6 @@
 # conway
 
-Conway is an attempt at making [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in Gleam as a means to learn the language.
+Conway is an attempt at making a simplified version of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in Gleam as a means to learn the language.
 
 ## Development
 
